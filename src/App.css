@@ -26,3 +26,13 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.left {
+    float: left;
+    width: 60%;
+}
+
+ .right {
+    float: right;
+    width: 30%;
+}

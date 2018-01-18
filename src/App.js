@@ -1,18 +1,59 @@
 import React, { Component } from 'react'
-import logo from './logo.svg'
 import './App.css'
+import Storage from './services/storage'
+import FormInput from './components/form-input'
+import History from './components/history'
 
 class App extends Component {
+  constructor () {
+    super()
+    this.storage = new Storage()
+    this.state = {
+      well: '',
+      wrong: '',
+      improve: '',
+      conversations: this.storage.getCollection('conversations')
+    }
+  }
+  clearFields () {
+    this.setState({
+      well: '',
+      wrong: '',
+      improve: ''
+    })
+  }
+  getConversationsFromState () {
+    return {
+      well: this.state.well,
+      wrong: this.state.wrong,
+      improve: this.state.improve
+    }
+  }
+  change (id, e) {
+    let change = {}
+    change[id] = e.target.value
+    this.setState(change)
+  }
+  saveConversation () {
+    this.storage.appendCollection('conversations', {time: new Date().getTime(), conversation: this.getConversationsFromState()})
+    this.clearFields()
+    this.setState({conversations: this.storage.getCollection('conversations')})
+  }
   render () {
     return (
       <div className='App'>
         <header className='App-header'>
-          <img src={logo} className='App-logo' alt='logo' />
-          <h1 className='App-title'>Welcome to React</h1>
+          <h1 className='App-title'>Conversation</h1>
         </header>
-        <p className='App-intro'>
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <div className='left'>
+          <FormInput id='well' text='What went well during the sprint cycle?' value={this.state.well} onChange={this.change.bind(this)} />
+          <FormInput id='wrong' text='What went wrong during the sprint cycle?' value={this.state.wrong} onChange={this.change.bind(this)} />
+          <FormInput id='improve' text='What could we do differently to improve?' value={this.state.improve} onChange={this.change.bind(this)} />
+          <button onClick={this.saveConversation.bind(this)}>Save</button>
+        </div>
+        <div className='right'>
+          <History history={this.state.conversations} />
+        </div>
       </div>
     )
   }
